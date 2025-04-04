@@ -1,0 +1,15 @@
+[submodule "API_Gateway"]
+    path = API_Gateway
+    url = https://github.com/Application-Web-Distribution-Project/Api-Gateway.git
+
+[submodule "Eureka-Server"]
+    path = Eureka-Server
+    url = https://github.com/Application-Web-Distribution-Project/Eureka-Server.git
+
+[submodule "Reclamation_Service"]
+    path = Reclamation_Service
+    url = https://github.com/Application-Web-Distribution-Project/Reclamation_Service.git
+
+[submodule "Front-End"]
+    path = Front-End
+    url = https://github.com/Application-Web-Distribution-Project/Front-End.git
