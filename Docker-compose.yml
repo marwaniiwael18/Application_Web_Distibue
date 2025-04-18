@@ -1,0 +1,154 @@
+version: '3.8'
+
+services:
+
+  #Eureka-Server
+  eureka:
+    build:
+      context: ./Eureka-Server
+    image: eureka-server
+    container_name: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - mynetwork
+
+  #Api-getway
+  api-gateway:
+    build:
+      context: ./API_Gateway
+    image: api-gateway
+    container_name: api-gateway
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+    networks:
+      - mynetwork
+
+  #Front-End
+  angular-frontend:
+    build: 
+      context: ./Front-End
+      dockerfile: Dockerfile
+    image: angular-frontend
+    container_name: angular-frontend
+    ports:
+      - "4200:4200"
+    networks:
+      - mynetwork
+    restart: unless-stopped
+    depends_on:
+      - api-gateway
+      - reclamation-service
+      - commande-service
+    environment:
+      - API_URL=http://api-gateway:8081
+    
+
+  #Reclamation_db
+  db:
+    image: mysql:8
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: reclamation_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  #Reclamation-Service
+  reclamation-service:
+    build:
+      context: ./Reclamation_Service
+    image: reclamation-service
+    container_name: reclamation-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      # Database configuration
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/reclamation_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
+      # Eureka configuration
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      # Email configuration
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: Marwaniwael88@gmail.com
+      SPRING_MAIL_PASSWORD: vhgt kjkc gkbi rbkr
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: smtp.gmail.com
+    networks:
+      - mynetwork
+
+  #Commandes-Service
+  commande-service:
+    build:
+      context: ./Commandes_Service
+    image: commande-service
+    container_name: commande-service
+    ports:
+      - "8090:8090"
+    depends_on:
+      eureka:
+        condition: service_started
+    environment:
+        # Database configuration
+      spring.data.mongodb.uri: mongodb://mongodb:27017/restaurantDB
+        # Eureka configuration
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      # Email configuration
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: Marwaniwael88@gmail.com
+      SPRING_MAIL_PASSWORD: vhgt kjkc gkbi rbkr
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: smtp.gmail.com
+    networks:
+      - mynetwork
+
+  #MongoDB Pour Commandes-Service
+  MongoDB:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - mynetwork
+    volumes:
+      - mongo_data:/data/db
+
+# Volumes pour la persistance des données
+volumes:
+  mysql_data:
+    driver: local
+  mongo_data:
+    driver: local
+
+# Réseau pour la communication entre les conteneurs
+networks:
+  mynetwork:
+    driver: bridge
