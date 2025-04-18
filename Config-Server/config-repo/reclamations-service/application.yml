@@ -1,0 +1,67 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: reclamations-service  
+
+  datasource:
+    url: jdbc:mysql://db:3306/reclamation_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+    username: user
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+  hikari:
+    maximum-pool-size: 10
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: Marwaniwael88@gmail.com
+    password: vhgt kjkc gkbi rbkr
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+        debug: true
+        transport:
+          protocol: smtp
+        socketFactory:
+          class: javax.net.ssl.SSLSocketFactory
+
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=100,expireAfterAccess=3600s
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+    hostname: reclamation-service
+
+logging:
+  level:
+    org.springframework.mail: DEBUG
+    com.sun.mail: DEBUG
+    javax.mail: DEBUG
+    com.restaurant.reclamations: DEBUG
