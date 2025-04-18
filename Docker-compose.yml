@@ -2,6 +2,25 @@ version: '3.8'
 
 services:
 
+  #Config-Server
+  config-server:
+    build:
+      context: ./Config-Server
+    image: config-server
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./Config-Server/config-repo:/config-repo
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
   #Eureka-Server
   eureka:
     build:
@@ -10,10 +29,15 @@ services:
     container_name: eureka
     ports:
       - "8761:8761"
+    depends_on:
+      config-server:
+        condition: service_healthy
+    environment:
+      CONFIG_SERVER_URL: http://config-server:8888
     networks:
       - mynetwork
 
-  #Api-getway
+  #Api-gateway
   api-gateway:
     build:
       context: ./API_Gateway
@@ -23,7 +47,9 @@ services:
       - "8081:8081"
     depends_on:
       - eureka
+      - config-server
     environment:
+      CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
     networks:
       - mynetwork
@@ -42,11 +68,8 @@ services:
     restart: unless-stopped
     depends_on:
       - api-gateway
-      - reclamation-service
-      - commande-service
     environment:
       - API_URL=http://api-gateway:8081
-    
 
   #Reclamation_db
   db:
@@ -79,27 +102,16 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      db:
-        condition: service_healthy
-      eureka:
-        condition: service_started
+      - db
+      - config-server
+      - eureka
     environment:
-      # Database configuration
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/reclamation_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+      CONFIG_SERVER_URL: http://config-server:8888
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      # Variables minimales nécessaires pour la connexion à la base de données
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/reclamation_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
-      # Eureka configuration
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
-      # Email configuration
-      SPRING_MAIL_HOST: smtp.gmail.com
-      SPRING_MAIL_PORT: 587
-      SPRING_MAIL_USERNAME: Marwaniwael88@gmail.com
-      SPRING_MAIL_PASSWORD: vhgt kjkc gkbi rbkr
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: smtp.gmail.com
     networks:
       - mynetwork
 
@@ -112,26 +124,19 @@ services:
     ports:
       - "8090:8090"
     depends_on:
-      eureka:
-        condition: service_started
+      - mongodb
+      - config-server
+      - eureka
     environment:
-        # Database configuration
-      spring.data.mongodb.uri: mongodb://mongodb:27017/restaurantDB
-        # Eureka configuration
+      CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
-      # Email configuration
-      SPRING_MAIL_HOST: smtp.gmail.com
-      SPRING_MAIL_PORT: 587
-      SPRING_MAIL_USERNAME: Marwaniwael88@gmail.com
-      SPRING_MAIL_PASSWORD: vhgt kjkc gkbi rbkr
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
-      SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: smtp.gmail.com
+      # Variable minimale nécessaire pour MongoDB
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/restaurantDB
     networks:
       - mynetwork
 
   #MongoDB Pour Commandes-Service
-  MongoDB:
+  mongodb:
     image: mongo:latest
     container_name: mongodb
     ports:
