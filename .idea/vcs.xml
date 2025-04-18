@@ -2,7 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/API_Gateway" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Api_Gateway" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Commandes_Service" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Eureka-Server" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Front-End" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Reclamation_Service" vcs="Git" />

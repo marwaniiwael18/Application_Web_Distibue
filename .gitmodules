@@ -13,3 +13,7 @@
 [submodule "Front-End"]
     path = Front-End
     url = https://github.com/Application-Web-Distribution-Project/Front-End.git
+
+[submodule "Commandes_Service"]
+    path = Commandes_Service
+    url = https://github.com/Application-Web-Distribution-Project/Commandes_Service.git
