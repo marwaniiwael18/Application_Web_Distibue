@@ -17,3 +17,7 @@
 [submodule "Commandes_Service"]
     path = Commandes_Service
     url = https://github.com/Application-Web-Distribution-Project/Commandes_Service.git
+
+[submodule "Config-Server"]
+    path = Config-Server
+    url = https://github.com/Application-Web-Distribution-Project/Config_Server.git
