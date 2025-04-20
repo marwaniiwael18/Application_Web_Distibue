@@ -10,7 +10,7 @@
         <module name="API_Gateway" />
         <module name="Eureka-Server" />
       </profile>
-      <profile name="Annotation profile for Reclamation_Service" enabled="true">
+      <profile name="Annotation profile for Users_Service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -19,6 +19,7 @@
         </processorPath>
         <module name="Reclamation_Service" />
         <module name="Commandes_Service" />
+        <module name="Users_Service" />
       </profile>
     </annotationProcessing>
   </component>
@@ -28,6 +29,7 @@
       <module name="Commandes_Service" options="-parameters" />
       <module name="Eureka-Server" options="-parameters" />
       <module name="Reclamation_Service" options="-parameters" />
+      <module name="Users_Service" options="-parameters" />
     </option>
   </component>
 </project>
