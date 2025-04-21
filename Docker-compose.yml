@@ -116,9 +116,34 @@ services:
     networks:
       - mynetwork
 
-  
-  
-  
+  menu-service:
+    build:
+      context: ./Menu_Service
+    image: menu-service
+    container_name: menu-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - menu-h2
+      - config-server
+      - eureka
+    environment:
+      SPRING_APPLICATION_NAME: menu-service
+      SERVER_PORT: 8084
+      SPRING_H2_CONSOLE_ENABLED: "true"
+      SPRING_H2_CONSOLE_PATH: /h2
+      SPRING_H2_CONSOLE_SETTINGS_WEB_ALLOW_OTHERS: "true"
+      SPRING_DATASOURCE_URL: jdbc:h2:file:./data/Menu
+      SPRING_DATASOURCE_USERNAME: Nassim
+      SPRING_DATASOURCE_PASSWORD:
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+    volumes:
+      - ./Menu_Service/data:/app/data
+    networks:
+      - mynetwork
+
   #Commandes-Service
   commande-service:
     build:
@@ -173,6 +198,20 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  #H2 Database for Menu Service
+  menu-h2:
+    image: oscarfonts/h2
+    container_name: menu-h2
+    ports:
+      - "8092:8082" # Web console port (external:internal)
+      - "9092:9092" # TCP server port
+    environment:
+      - H2_OPTIONS=-ifNotExists
+    volumes:
+      - menu_h2_data:/opt/h2-data
+    networks:
+      - mynetwork
+
   #Prometheus
   restaurant-prometheus:
     image: prom/prometheus:latest
@@ -218,6 +257,8 @@ volumes:
   prometheus_data:
     driver: local
   grafana_data:
+    driver: local
+  menu_h2_data:
     driver: local
 
 # Réseau pour la communication entre les conteneurs

@@ -10,6 +10,15 @@
         <module name="API_Gateway" />
         <module name="Eureka-Server" />
       </profile>
+      <profile name="Annotation profile for Menu" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/unknown/lombok-unknown.jar" />
+        </processorPath>
+        <module name="Menu" />
+      </profile>
       <profile name="Annotation profile for Users_Service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -28,6 +37,7 @@
       <module name="API_Gateway" options="-parameters" />
       <module name="Commandes_Service" options="-parameters" />
       <module name="Eureka-Server" options="-parameters" />
+      <module name="Menu" options="-parameters" />
       <module name="Reclamation_Service" options="-parameters" />
       <module name="Users_Service" options="-parameters" />
     </option>

@@ -25,3 +25,6 @@
 [submodule "User_Service"]
     path = User_Service
     url = https://github.com/Application-Web-Distribution-Project/User_Service.git
+[submodule "Menu_Service"]
+    path = Menu_Service
+    url = https://github.com/Application-Web-Distribution-Project/Menu_Service.git
