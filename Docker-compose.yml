@@ -248,6 +248,50 @@ services:
     depends_on:
       - restaurant-prometheus
 
+  #PostgreSQL for Livraison Service
+  postgres-livraison:
+    image: postgres:14
+    container_name: postgres-livraison
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: livraisonGestion
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0000
+    volumes:
+      - postgres_livraison_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  #Livraison-Service
+  livraison-service:
+    build:
+      context: ./LivraisonService
+    image: livraison-service
+    container_name: livraison-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres-livraison
+      - config-server
+      - eureka
+      
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-livraison:5432/livraisonGestion
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 0000
+      SERVER_PORT: 8085
+    networks:
+      - mynetwork
+
+  
+
 # Volumes pour la persistance des données
 volumes:
   mysql_data:
@@ -259,6 +303,8 @@ volumes:
   grafana_data:
     driver: local
   menu_h2_data:
+    driver: local
+  postgres_livraison_data:
     driver: local
 
 # Réseau pour la communication entre les conteneurs
