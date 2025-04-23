@@ -1,5 +1,61 @@
 services:
 
+
+  notification-service:
+    build:
+      context: ./Notification_service
+    container_name: notification-service
+    ports:
+      - "8091:8091"
+    environment:
+      - PORT=8091
+      - KAFKA_BROKERS=kafka:9092
+      - EUREKA_HOST=eureka
+      - EUREKA_PORT=8761
+      - EMAIL_SERVICE=gmail
+      - EMAIL_USER=Marwaniwael88@gmail.com
+      - EMAIL_PASSWORD=vhgt kjkc gkbi rbkr
+      - EMAIL_FROM=Marwaniwael88@gmail.com
+      - NODE_ENV=development
+    networks:
+      - mynetwork
+    depends_on:
+      - kafka
+      - eureka
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8091/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - mynetwork
+      
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - mynetwork
+
+
   #Config-Server
   config-server:
     build:
@@ -103,18 +159,32 @@ services:
     ports:
       - "8082:8082"
     depends_on:
-      - db
-      - config-server
-      - eureka
+      db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+      kafka:
+        condition: service_started
     environment:
       CONFIG_SERVER_URL: http://config-server:8888
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
-      # Variables minimales nécessaires pour la connexion à la base de données
+      SPRING_PROFILES_ACTIVE: override
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/reclamation_db?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+      WAIT_HOSTS: config-server:8888,eureka:8761,kafka:9092
+      WAIT_TIMEOUT: 300
     networks:
       - mynetwork
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   menu-service:
     build:

@@ -22,7 +22,6 @@
     path = Config-Server
     url = https://github.com/Application-Web-Distribution-Project/Config_Server.git
 
-
 [submodule "User_Service"]
     path = User_Service
     url = https://github.com/Application-Web-Distribution-Project/User_Service.git
@@ -30,6 +29,11 @@
 [submodule "Menu_Service"]
     path = Menu_Service
     url = https://github.com/Application-Web-Distribution-Project/Menu_Service.git
+
 [submodule "LivraisonService"]
     path = LivraisonService
     url = https://github.com/Application-Web-Distribution-Project/LivraisonService.git
+
+[submodule "Notification_service"]
+    path = Notification_service
+    url = https://github.com/Application-Web-Distribution-Project/Notification-service.git

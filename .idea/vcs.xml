@@ -6,6 +6,7 @@
     <mapping directory="$PROJECT_DIR$/Config-Server" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Eureka-Server" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Front-End" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/LivraisonService" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Menu_Service" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/Reclamation_Service" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/User_Service" vcs="Git" />

@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="API_Gateway" />
         <module name="Eureka-Server" />
+        <module name="config-server" />
       </profile>
       <profile name="Annotation profile for Menu" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -40,6 +41,7 @@
       <module name="Menu" options="-parameters" />
       <module name="Reclamation_Service" options="-parameters" />
       <module name="Users_Service" options="-parameters" />
+      <module name="config-server" options="-parameters" />
     </option>
   </component>
 </project>
