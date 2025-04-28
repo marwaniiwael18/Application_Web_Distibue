@@ -1,4 +1,4 @@
-# Système de Gestion des Réclamations - Restaurant Management Platform 
+![ArchitectureMicro](https://github.com/user-attachments/assets/31de072a-aa93-4a3e-9880-decc4e5fefca)# Système de Gestion des Réclamations - Restaurant Management Platform 
 
 ## Vue d'ensemble
 Microservice de gestion des réclamations intégré dans une plateforme de gestion de restaurant, permettant le suivi et le traitement des réclamations clients.
@@ -86,6 +86,9 @@ git submodule update --remote --merge
 
 ### 5. Cloner le Projet avec Submodules (Pour nouveaux développeurs)
 ```bash
+
+
+
 git clone --recursive https://github.com/Application-Web-Distribution-Project/Application_Web_Distibue.git
 ```
 
